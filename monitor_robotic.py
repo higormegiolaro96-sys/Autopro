@@ -1,5 +1,12 @@
-def evaluate_temperature(temperatura_motor):
+from typing import Dict, List, Optional
+import logging
+
+
+def evaluate_temperature(temperatura_motor: float) -> Dict[str, object]:
     """Avalia a temperatura do motor e retorna um dicionário com o nível e mensagens.
+
+    Args:
+        temperatura_motor: temperatura atual do motor em °C.
 
     Retorna:
         dict: {
@@ -7,7 +14,7 @@ def evaluate_temperature(temperatura_motor):
             'messages': [str, ...]
         }
     """
-    messages = []
+    messages: List[str] = []
     messages.append(f"⚙️ MONITORAMENTO ATIVO: Temperatura atual do motor: {temperatura_motor}°C.")
 
     if temperatura_motor < 70:
@@ -26,16 +33,37 @@ def evaluate_temperature(temperatura_motor):
     return {"level": level, "messages": messages}
 
 
-def print_report(temperatura_motor):
-    """Imprime o relatório de monitoramento no stdout."""
+def print_report(temperatura_motor: float, logger: Optional[logging.Logger] = None) -> None:
+    """Imprime o relatório de monitoramento no stdout ou registra via logger.
+
+    Args:
+        temperatura_motor: temperatura atual do motor em °C.
+        logger: se fornecido, as mensagens serão enviadas para esse logger em vez de stdout.
+    """
     result = evaluate_temperature(temperatura_motor)
-    print("--------------------------------------------------")
-    for m in result["messages"]:
-        print(m)
-    print("--------------------------------------------------")
+    header = "--------------------------------------------------"
+
+    if logger is None:
+        print(header)
+        for m in result["messages"]:
+            print(m)
+        print(header)
+    else:
+        logger.info(header)
+        for m in result["messages"]:
+            logger.info(m)
+        logger.info(header)
+
+
+def get_default_logger() -> logging.Logger:
+    """Configura e retorna um logger simples para uso em integrações/produção."""
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s")
+    return logging.getLogger("monitor_robotic")
 
 
 if __name__ == "__main__":
     # Exemplo de uso: ao executar diretamente, usa um valor de exemplo.
     temperatura_motor = 75
-    print_report(temperatura_motor)
+    # Ao executar como script, usamos o logger por padrão para demonstrar integração com sistemas de logs.
+    logger = get_default_logger()
+    print_report(temperatura_motor, logger)
