@@ -2,7 +2,6 @@ print("--- SIMULADOR DE PRESSÃO INICIADO ---")
 print("*(Para fechar o simulador, digite 0)*\n")
 
 while True:
-    # O .replace(",", ".") aceita tanto vírgula quanto ponto
     sensor_pressao = float(input("Digite o valor atual da pressão (ou 0 para sair): ").replace(",", "."))
     
     if sensor_pressao == 0:
